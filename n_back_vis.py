@@ -6,10 +6,20 @@ import os
 
 if __name__ == '__main__':
     times = ['pre', 'post']
+    subj_stim = {
+        1: ['Meditation', 'tACS'],
+        2: ['tACS', 'Meditation'],
+        3: ['Meditation', 'Meditation'],
+        4: ['tACS', 'Meditation']
+    }
+
     z = 1.960
 
     bar_width = 0.15
     bar_sep = 0.12
+
+    subj_acc = {}
+    subj_dope = {}
 
     for subj in range(1, 5):
         # print(f'Subject 122{i}:')
@@ -64,7 +74,7 @@ if __name__ == '__main__':
         fig, ax = plt.subplots(2, 1, figsize=(8, 8))
         fig.subplots_adjust(hspace=0.4)
         fig.suptitle(f'Subject 122{subj} N-Back Accuracy and Dope Scores')
-        ax[0].set_title('Day 1')
+        ax[0].set_title(f'Day 1: {subj_stim[subj][0]} Performed')
         ax[0].set_xticks(np.arange(2))
         ax[0].set_xticklabels(times)
         ax[0].set_xlabel('N-Back Session')
@@ -76,7 +86,7 @@ if __name__ == '__main__':
         ax[0].plot(x, day1_dope_line, label=f'Dope Score Trendline, t={dope_stats[1][0]:.3f} p={dope_stats[1][1]:.3f}')
         ax[0].legend()
 
-        ax[1].set_title('Day 2')
+        ax[1].set_title(f'Day 2: {subj_stim[subj][1]} Performed')
         ax[1].set_xticks(np.arange(2))
         ax[1].set_xticklabels(times)
         ax[1].set_xlabel('N-Back Session')
@@ -89,9 +99,78 @@ if __name__ == '__main__':
         ax[1].legend()
         if not os.path.exists('figs'):
             os.mkdir('figs')
-        fig.savefig(f'figs/subject122{subj}_accuracy.png', dpi=300)
+        fig.savefig(f'figs/subject122{subj}_accuracy_dope.png', dpi=300)
 
         plt.show()
         
+
+        subj_acc[subj] = (accuracies, accuracy_CIs)
+        subj_dope[subj] = (dopes, dope_CIs)
+
+    
+    acc_sequences = []
+    acc_errs = []
+
+    dope_sequences = []
+    dope_errs = []
+
+    for subj in range(1, 5):
+        acc_seq = []
+        acc_err = []
+        dope_seq = []
+        dope_err = []
+        for day in subj_acc[subj][0].keys():
+            for time in subj_acc[subj][0][day].keys():
+                acc_seq.append(subj_acc[subj][0][day][time])
+                acc_err.append(subj_acc[subj][1][day][time])
+
+                dope_seq.append(subj_dope[subj][0][day][time])
+                dope_err.append(subj_dope[subj][1][day][time])
+        
+        acc_sequences.append(acc_seq)
+        acc_errs.append(acc_err)
+
+        dope_sequences.append(dope_seq)
+        dope_errs.append(dope_err)
+
+    bar_width = 0.08
+    bar_sep = 0.05
+    
+    fig, ax = plt.subplots(2, 1, figsize=(8, 8))
+    fig.subplots_adjust(hspace=0.4)
+    fig.suptitle('N-Back Task Accuracies and Dope Scores for all Subjects across all Sessions')
+
+    ax[0].set_title('Subject N-Back Task Accuracies')
+    ax[0].set_ylim([0, 1])
+    ax[0].set_xticks(np.arange(4))
+    ax[0].set_xticklabels(['Day 1 Pre N-Back', 'Day 1 Post N-Back', 'Day 2 Pre N-Back', 'Day 2 Post N-Back'])
+    ax[0].set_ylabel('Score')
+    ax[0].set_xlabel('N-Back Session')
+
+    ax[0].bar(np.arange(4) - 3 * bar_sep, acc_sequences[0], bar_width, yerr=acc_errs[0], capsize=5, label=f'Subject 122{1}')
+    ax[0].bar(np.arange(4) - 1 * bar_sep, acc_sequences[1], bar_width, yerr=acc_errs[1], capsize=5, label=f'Subject 122{2}')
+    ax[0].bar(np.arange(4) + 1 * bar_sep, acc_sequences[2], bar_width, yerr=acc_errs[2], capsize=5, label=f'Subject 122{3}')
+    ax[0].bar(np.arange(4) + 3 * bar_sep, acc_sequences[3], bar_width, yerr=acc_errs[3], capsize=5, label=f'Subject 122{4}')
+
+    ax[0].legend()
+
+
+    ax[1].set_title('Subject N-Back Task Dope Scores')
+    ax[1].set_ylim([0, 1])
+    ax[1].set_xticks(np.arange(4))
+    ax[1].set_xticklabels(['Day 1 Pre N-Back', 'Day 1 Post N-Back', 'Day 2 Pre N-Back', 'Day 2 Post N-Back'])
+    ax[1].set_ylabel('Score')
+    ax[1].set_xlabel('N-Back Session')
+
+    ax[1].bar(np.arange(4) - 3 * bar_sep, dope_sequences[0], bar_width, yerr=dope_errs[0], capsize=5, label=f'Subject 122{1}')
+    ax[1].bar(np.arange(4) - 1 * bar_sep, dope_sequences[1], bar_width, yerr=dope_errs[1], capsize=5, label=f'Subject 122{2}')
+    ax[1].bar(np.arange(4) + 1 * bar_sep, dope_sequences[2], bar_width, yerr=dope_errs[2], capsize=5, label=f'Subject 122{3}')
+    ax[1].bar(np.arange(4) + 3 * bar_sep, dope_sequences[3], bar_width, yerr=dope_errs[3], capsize=5, label=f'Subject 122{4}')
+
+    ax[1].legend()
+
+    fig.savefig(f'figs/all_subj_acc_dope.png', dpi=300)
+    plt.show()
+
         
 
