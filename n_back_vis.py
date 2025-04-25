@@ -99,10 +99,9 @@ if __name__ == '__main__':
         ax[1].legend()
         if not os.path.exists('figs'):
             os.mkdir('figs')
-        fig.savefig(f'figs/subject122{subj}_accuracy_dope.png', dpi=300)
-
-        plt.show()
-        
+        # fig.savefig(f'figs/subject122{subj}_accuracy_dope.png', dpi=300)
+        # plt.show()
+        print(f'Finshed subject {subj}')
 
         subj_acc[subj] = (accuracies, accuracy_CIs)
         subj_dope[subj] = (dopes, dope_CIs)
@@ -147,10 +146,10 @@ if __name__ == '__main__':
     ax[0].set_ylabel('Score')
     ax[0].set_xlabel('N-Back Session')
 
-    ax[0].bar(np.arange(4) - 3 * bar_sep, acc_sequences[0], bar_width, yerr=acc_errs[0], capsize=5, label=f'Subject 122{1}')
-    ax[0].bar(np.arange(4) - 1 * bar_sep, acc_sequences[1], bar_width, yerr=acc_errs[1], capsize=5, label=f'Subject 122{2}')
-    ax[0].bar(np.arange(4) + 1 * bar_sep, acc_sequences[2], bar_width, yerr=acc_errs[2], capsize=5, label=f'Subject 122{3}')
-    ax[0].bar(np.arange(4) + 3 * bar_sep, acc_sequences[3], bar_width, yerr=acc_errs[3], capsize=5, label=f'Subject 122{4}')
+    ax[0].bar(np.arange(4) - 3 * bar_sep, acc_sequences[0], bar_width, yerr=acc_errs[0], capsize=5, label=f'Subject 122{1} S1={subj_stim[1][0]}, S2={subj_stim[1][1]}')
+    ax[0].bar(np.arange(4) - 1 * bar_sep, acc_sequences[1], bar_width, yerr=acc_errs[1], capsize=5, label=f'Subject 122{2} S1={subj_stim[2][0]}, S2={subj_stim[2][1]}')
+    ax[0].bar(np.arange(4) + 1 * bar_sep, acc_sequences[2], bar_width, yerr=acc_errs[2], capsize=5, label=f'Subject 122{3} S1={subj_stim[3][0]}, S2={subj_stim[3][1]}')
+    ax[0].bar(np.arange(4) + 3 * bar_sep, acc_sequences[3], bar_width, yerr=acc_errs[3], capsize=5, label=f'Subject 122{4} S1={subj_stim[4][0]}, S2={subj_stim[4][1]}')
 
     ax[0].legend()
 
@@ -162,15 +161,16 @@ if __name__ == '__main__':
     ax[1].set_ylabel('Score')
     ax[1].set_xlabel('N-Back Session')
 
-    ax[1].bar(np.arange(4) - 3 * bar_sep, dope_sequences[0], bar_width, yerr=dope_errs[0], capsize=5, label=f'Subject 122{1}')
-    ax[1].bar(np.arange(4) - 1 * bar_sep, dope_sequences[1], bar_width, yerr=dope_errs[1], capsize=5, label=f'Subject 122{2}')
-    ax[1].bar(np.arange(4) + 1 * bar_sep, dope_sequences[2], bar_width, yerr=dope_errs[2], capsize=5, label=f'Subject 122{3}')
-    ax[1].bar(np.arange(4) + 3 * bar_sep, dope_sequences[3], bar_width, yerr=dope_errs[3], capsize=5, label=f'Subject 122{4}')
+    ax[1].bar(np.arange(4) - 3 * bar_sep, dope_sequences[0], bar_width, yerr=dope_errs[0], capsize=5, label=f'Subject 122{1} S1={subj_stim[1][0]}, S2={subj_stim[1][1]}')
+    ax[1].bar(np.arange(4) - 1 * bar_sep, dope_sequences[1], bar_width, yerr=dope_errs[1], capsize=5, label=f'Subject 122{2} S1={subj_stim[2][0]}, S2={subj_stim[2][1]}')
+    ax[1].bar(np.arange(4) + 1 * bar_sep, dope_sequences[2], bar_width, yerr=dope_errs[2], capsize=5, label=f'Subject 122{3} S1={subj_stim[3][0]}, S2={subj_stim[3][1]}')
+    ax[1].bar(np.arange(4) + 3 * bar_sep, dope_sequences[3], bar_width, yerr=dope_errs[3], capsize=5, label=f'Subject 122{4} S1={subj_stim[4][0]}, S2={subj_stim[4][1]}')
 
     ax[1].legend()
 
     fig.savefig(f'figs/all_subj_acc_dope.png', dpi=300)
     plt.show()
 
-        
+
+
 
