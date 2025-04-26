@@ -31,7 +31,7 @@ def make_topoplot(ch32Locations, run_fisher_scores):
     pos_dict = {name: np.array([x, y, z]) for name, x, y, z in zip(chLabels, chX, chY, chZ)}
     custom_montage = mne.channels.make_dig_montage(ch_pos=pos_dict, coord_frame='head')
 
-    info = mne.create_info(ch_names=chLabels.tolist(), sfreq=512, ch_types='eeg')
+    info = mne.create_info(ch_names=chLabels, sfreq=512, ch_types='eeg')
     info.set_montage(custom_montage)
 
     fig, ax = plt.subplots(1, len(run_fisher_scores), figsize=(24, 6))
