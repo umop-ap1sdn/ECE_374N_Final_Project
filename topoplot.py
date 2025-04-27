@@ -4,14 +4,20 @@ import mne
 import matplotlib.pyplot as plt
 
 
-# ch32Locations is the path to the ch32Locations.mat file (can be found on canvas)
+# ch32Locations is the path to the ch32Locations.mat or ErrP_cap_chan_file.mat file (can be found on canvas)
 # run_fisher_scores should be shaped as (n, 32) where n is the number of runs (number of topoplots to make), 32 is the EEG channels
 # Ordering for EEG channels should be [FP1', 'FPZ', 'FP2', 'F7', 'F3', 'FZ', 'F4', 'F8', 'FC5', 'FC1', 'FC2', 'FC6', 'M1', 'T7', 'C3', 'CZ', 'C4', 'T8', 'M2', 'CP5', 'CP1', 'CP2', 'CP6', 'P7', 'P3', 'PZ', 'P4', 'P8', 'POZ', 'O1', 'OZ', 'O2']
+# OR
+# ['AF3', 'AF4', 'F3', 'F1', 'Fz', 'F2', 'F4', 'FC3', 'FC1', 'FCz', 'FC2', 'FC4', 'C3', 'C1', 'Cz', 'C2', 'C4', 'CP3', 'CP1', 'CPz', 'CP2', 'CP4', 'P3', 'P1', 'Pz', 'P2', 'P4', 'PO3', 'POz', 'PO4', 'O1', 'O2']
 
 # Returns the fig, ax from subplot creations, figures do not have titles or other labels by default, should be added after return
 def make_topoplot(ch32Locations, run_fisher_scores):
     chLocs = scipy.io.loadmat(ch32Locations, struct_as_record=False, squeeze_me=True)
-    chLocs = chLocs['ch32Locations']
+    
+    if 'ch32Locations' in chLocs.keys():
+        chLocs = chLocs['ch32Locations']
+    else:
+        chLocs = chLocs['chan']
 
     chLabels = []
     chX = []
