@@ -72,9 +72,12 @@ for file_path in xdf_files:
         output_path = os.path.join(folder, base + "_clean_raw.fif")
 
         # Create MNE RawArray and save
+        channel_info = eeg_stream['info']['desc'][0]['channels'][0]['channel']
+        channel_names = [ch['label'][0] for ch in channel_info[:32]]
+        
         ch_names = [f"EEG{i+1}" for i in range(32)]
         ch_types = ["eeg"] * 32
-        info = create_info(ch_names=ch_names, sfreq=fs, ch_types=ch_types)
+        info = create_info(ch_names=channel_names, sfreq=fs, ch_types=ch_types)
         raw = RawArray(clean_eeg.T, info)
         raw.save(output_path, overwrite=True)
 
