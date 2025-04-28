@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 # Returns the fig, ax from subplot creations, figures do not have titles or other labels by default, should be added after return
 meditation_cap_ordering = ['AF3', 'AF4', 'F3', 'F1', 'FZ', 'F2', 'F4', 'FC3', 'FC1', 'FCZ', 'FC2', 'FC4', 'C3', 'C1', 'CZ', 'C2', 'C4', 'CP3', 'CP1', 'CPZ', 'CP2', 'CP4', 'P3', 'P1', 'PZ', 'P2', 'P4', 'PO3', 'POZ', 'PO4', 'O1', 'O2']
 tacs_cap_ordering = ['FP1', 'FPZ', 'FP2', 'F7', 'F3', 'FZ', 'F4', 'F8', 'FC5', 'FC1', 'FC2', 'FC6', 'M1', 'T7', 'C3', 'CZ', 'C4', 'T8', 'M2', 'CP5', 'CP1', 'CP2', 'CP6', 'P7', 'P3', 'PZ', 'P4', 'P8', 'POZ', 'O1', 'OZ', 'O2']
-def make_topoplot(ch32Locations, run_fisher_scores, channel_ordering):
+def make_topoplot(ch32Locations, run_fisher_scores, channel_ordering, fisher_scores_names, figure_title = None):
     chLocs = scipy.io.loadmat(ch32Locations, struct_as_record=False, squeeze_me=True)
     is_meditation = 'ch32Locations' not in chLocs.keys()
     
@@ -44,8 +44,10 @@ def make_topoplot(ch32Locations, run_fisher_scores, channel_ordering):
         chZ.append(channel.Z)
 
     scale_factor = 10 if is_meditation else 1000
-    chX = np.array(chX) / scale_factor
-    chY = np.array(chY) / scale_factor
+    horizontal_scale_factor = 1.1 if is_meditation else 1
+    vertical_scale_factor = 1.1 if is_meditation else 1
+    chX = np.array(chX) / (scale_factor * horizontal_scale_factor)
+    chY = np.array(chY) / (scale_factor * vertical_scale_factor)
     chZ = np.array(chZ) / scale_factor
 
     pos_dict = {name: np.array([x, y, z]) for name, x, y, z in zip(chLabels, chX, chY, chZ)}
@@ -55,18 +57,38 @@ def make_topoplot(ch32Locations, run_fisher_scores, channel_ordering):
     info = mne.create_info(ch_names=chLabels, sfreq=512, ch_types='eeg')
     info.set_montage(custom_montage)
 
-
-    fig, ax = plt.subplots(1, len(run_fisher_scores), figsize=(24, 6))
+    # Calculate optimal grid dimensions
+    n_plots = len(run_fisher_scores)
+    n_cols = int(np.ceil(np.sqrt(n_plots)))
+    n_rows = int(np.ceil(n_plots / n_cols))
     
+    # Create figure with square-like dimensions
+    fig_size = min(6 * n_cols, 6 * n_rows)
+    fig, ax = plt.subplots(n_rows, n_cols, figsize=(fig_size, fig_size))
+    ax = ax.flatten() if n_plots > 1 else [ax]
+    
+    # Find global min and max for consistent color scaling, ignoring nan values
+    vmin = min(np.nanmin(scores) for scores in run_fisher_scores)
+    vmax = max(np.nanmax(scores) for scores in run_fisher_scores)
+    print(vmin, vmax)
     count = 0
-    for fisher_scores in run_fisher_scores:
+    for fisher_scores, fisher_scores_name in zip(run_fisher_scores, fisher_scores_names):
+        # replace nan with 0
+        fisher_scores = np.nan_to_num(fisher_scores)
         print(fisher_scores)
-        im, _ = mne.viz.plot_topomap(fisher_scores, info, cmap='viridis', show=False, axes=ax, names=chLabels)
-        cbar = plt.colorbar(im, ax=ax)
+        #put in the best cmap not viridis
+        im, _ = mne.viz.plot_topomap(fisher_scores, info, cmap='plasma', show=False, axes=ax[count], 
+                                    names=chLabels, vlim = (vmin, vmax))
+        cbar = plt.colorbar(im, ax=ax[count])
         cbar.set_label('Fisher Score')
+        ax[count].set_title(fisher_scores_name, fontsize=20)
         count += 1
     
+    # Hide unused subplots
+    for i in range(count, len(ax)):
+        ax[i].set_visible(False)
+    
+    # plt.tight_layout()
+    if figure_title:
+        fig.suptitle(figure_title, fontsize=30)
     return fig, ax
-
-
-
