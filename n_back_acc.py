@@ -10,6 +10,9 @@ def calc_acc_dope(sub, day, time, dataset_base='data/Group 12'):
     timeout_rate = []
 
     for file in os.listdir(path):
+        if not '.xdf' in file:
+            continue
+        
         streams, headers = load_xdf(os.path.join(path, file))
         trials = 0
         correct = 0
